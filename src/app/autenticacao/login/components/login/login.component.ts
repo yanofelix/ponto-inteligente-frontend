@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+import { Login } from '../../models';
+
 @Component({
     selector: 'app-login-pf',
     templateUrl: './login.component.html',
@@ -30,11 +32,12 @@ export class LoginComponent implements OnInit {
     }
 
     logar() {
-        if (this.form.invalid){
+        if (this.form.valid){
             this.snackBar.open("Dados inválidos", "Erro", { duration: 3000 });
             return;
         }
-        alert(JSON.stringify(this.form.value));
+        const login: Login = this.form.value;
+        alert(JSON.stringify(login));
     }
 
 }
