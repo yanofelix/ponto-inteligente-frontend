@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Login } from '../../models';
+import { LoginService } from '../../services';
 
 @Component({
     selector: 'app-login-pf',
@@ -17,8 +18,9 @@ export class LoginComponent implements OnInit {
     constructor(
         private formBuilder: FormBuilder,
         private snackBar: MatSnackBar,
-        //private router: Router
-    ) {}
+        private router: Router,
+        private loginService: LoginService
+    ) { }
 
     ngOnInit() {
         this.gerarForm();
@@ -32,12 +34,38 @@ export class LoginComponent implements OnInit {
     }
 
     logar() {
-        if (this.form.valid){
-            this.snackBar.open("Dados inválidos", "Erro", { duration: 3000 });
+        if (this.form.invalid){
             return;
         }
-        const login: Login = this.form.value;
-        alert(JSON.stringify(login));
-    }
 
+        const login: Login = this.form.value;
+        this.loginService.logar(login)
+        .subscribe(
+            data => {
+                console.log (JSON.stringify(data));
+                localStorage['token'] = data['data']['token'];
+                const usuarioData = JSON.parse(
+                    atob(data['data']['token'].split('.')[1])
+                );
+                console.log(JSON.stringify(usuarioData));
+                if(usuarioData['role'] == 'ROLE_ADMIN') {
+                    alert('Deve redirecionar para pagina de admin');
+                    //this.router.navigate(['/admin']);
+                }
+                else{
+                    alert('Deve redirecionar para pagina de funcionario');
+                    //this.router.navigate(['/funcionario']);
+                }
+            },
+            err => {
+                console.log(JSON.stringify(err));
+                let msg: string = "Tente novamente em instantes";
+                if(err['status'] == 401){
+                    msg = "email/senha inválido"
+                }
+                this.snackBar.open(msg, "Erro", {duration: 4000});
+            }
+        );
+
+    }
 }
