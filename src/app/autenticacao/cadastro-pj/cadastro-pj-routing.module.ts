@@ -8,7 +8,7 @@ export const CadastroPjRoutes: Routes = [
     component: CadastroPjComponent,
     children: [
       {
-        path: 'cadastro-pj',
+        path: '',
         component: CadastrarPjComponent
       }
     ]
